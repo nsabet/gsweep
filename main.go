@@ -10,6 +10,7 @@ import (
 	"os"
 	"sort"
 	"strings"
+	"time"
 
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
@@ -40,6 +41,15 @@ type email struct {
 	gmailID string
 	date    string // retrieved from message header
 	snippet string
+}
+
+const (
+	millisPerSecond     = int64(time.Second / time.Millisecond)
+	nanosPerMillisecond = int64(time.Millisecond / time.Nanosecond)
+)
+
+func msToTime(msInt int64) time.Time {
+	return time.Unix(msInt/millisPerSecond, (msInt%millisPerSecond)*nanosPerMillisecond)
 }
 
 // Retrieve a token, saves the token, then returns the generated client.
@@ -109,7 +119,7 @@ func getUserQuery() string {
 }
 
 func searchMail(svc *gmail.Service, query string) {
-	var total int64
+
 	msgs := []email{}
 	pageToken := ""
 	for {
@@ -126,23 +136,12 @@ func searchMail(svc *gmail.Service, query string) {
 		log.Printf("Processing %v messages...", len(r.Messages))
 
 		for _, m := range r.Messages {
-			msg, err := svc.Users.Messages.Get("me", m.Id).Do()
-			if err != nil {
-				log.Fatalf("Unable to retrieve message %v: %v", m.Id, err)
-			}
-			total += msg.SizeEstimate
-			date := ""
-			// for _, h := range msg.Payload.Headers {
-			// 	if h.Name == "Date" {
-			// 		date = h.Value
-			// 		break
-			// 	}
-			// }
+
 			msgs = append(msgs, email{
-				size:    msg.SizeEstimate,
-				gmailID: msg.Id,
-				date:    date,
-				snippet: msg.Snippet,
+				size:    0,
+				gmailID: m.Id,
+				date:    "",
+				snippet: "",
 			})
 		}
 
@@ -152,11 +151,10 @@ func searchMail(svc *gmail.Service, query string) {
 		pageToken = r.NextPageToken
 	}
 
-	log.Printf("total #msgs: %v, total size: %v\n", len(msgs), total)
+	log.Printf("total #msgs: %v\n", len(msgs))
 
 	sortBySize(msgs)
 
-	//interactiveDelete(svc, msgs)
 	batchDelete(svc, msgs)
 }
 
@@ -167,8 +165,19 @@ func batchDelete(svc *gmail.Service, msgs []email) {
 	}
 
 	for _, m := range top10 {
+		msg, err := svc.Users.Messages.Get("me", m.gmailID).Do()
+		if err != nil {
+			log.Fatalf("Unable to retrieve message %v: %v", m.gmailID, err)
+		}
+		date := ""
+		for _, h := range msg.Payload.Headers {
+			if h.Name == "Date" {
+				date = h.Value
+				break
+			}
+		}
 		fmt.Printf("\nMessage URL: https://mail.google.com/mail/u/0/#all/%v\n", m.gmailID)
-		fmt.Printf("Size: %v, Date: %v, Snippet: %q\n", m.size, m.date, m.snippet)
+		fmt.Printf("Size: %v, Date: %v, Snippet: %q\n", msg.SizeEstimate, date, msg.Snippet)
 		fmt.Printf(" ")
 	}
 
