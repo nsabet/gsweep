@@ -37,5 +37,9 @@ To build the source:
 * Ensure the file credentials.json is located in $GOPATH/src/github.com/nsabet/gsweep
 * cd $GOPATH/src/github.com/nsabet/gsweep
 * run ./gsweep
-     Enter a gmail search query (eg. larger:10M in:anywhere)
-     press Y if you are sure you want to batch delete the matching messages
+
+## Usage 
+0. After running the program check that the labels returned match your account 
+1. Enter a gmail search query (eg. larger:10M in:anywhere) at the prompt
+2. Check that the top10 mail snippets match the emails you want to delete
+2. Only, type "yes" if you are really sure you want to batch delete the matching messages. WARNING: emails will be permanently deleted and cannot be recovered from Trash.
