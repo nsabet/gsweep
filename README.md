@@ -25,17 +25,17 @@ go get -u golang.org/x/net/context
 
 ## Build the source
 Get the source :
-  go get https://github.com/nsabet/delgmail
+  go get https://github.com/nsabet/gsweep
 
 Go to the project directory: 
-  cd $GOPATH/src/github.com/nsabet/delgmail
+  cd $GOPATH/src/github.com/nsabet/gsweep
 
 To build the source: 
   go build
 
 ## Running the program
-* Ensure the file credentials.json is located in $GOPATH/src/github.com/nsabet/delgmail
-* cd $GOPATH/src/github.com/nsabet/delgmail
-* run ./delgmail
+* Ensure the file credentials.json is located in $GOPATH/src/github.com/nsabet/gsweep
+* cd $GOPATH/src/github.com/nsabet/gsweep
+* run ./gsweep
      Enter a gmail search query (eg. larger:10M in:anywhere)
      press Y if you are sure you want to batch delete the matching messages
