@@ -19,8 +19,11 @@ In resulting dialog click DOWNLOAD CLIENT CONFIGURATION and save the file creden
 ## Step 2: Prepare the workspace
 Set the GOPATH environment variable to your working directory.
 Get the Gmail API Go client library and OAuth2 package using the following commands:
+
 `go get -u google.golang.org/api/gmail/v1`
+
 `go get -u golang.org/x/oauth2/google`
+
 `go get -u golang.org/x/net/context`
 
 ## Build the source
